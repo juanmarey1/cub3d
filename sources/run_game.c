@@ -1,28 +1,5 @@
 #include "../include/cub3d.h"
 
-void	redo_raycasting(t_cub *cub)
-{
-	int	i;
-	int	j;
-
-
-	i = 0;
-	while (i < WIDTH)
-	{
-		j = 0;
-		while (j < HEIGHT)
-		{
-			mlx_pixel_put(cub->game.mlx_ptr, cub->game.win_ptr, i, j, 0x000000);
-			j++;
-		}
-		i++;
-	}
-
-
-
-	init_raycasting(cub);
-}
-
 // void	ft_move_player_y(t_cub *cub, int direction)
 // {
 // 	if (cub->grid_y == 100 && direction == -1)
@@ -95,7 +72,7 @@ void	ft_move_camera(t_cub *cub, int direction)
 		cub->angle = (2 * PI) + cub->angle;
 	else if (cub->angle > 2 * PI)
 		cub->angle = (cub->angle - (2 * PI));
-	redo_raycasting(cub);
+	init_raycasting(cub);
 }
 
 int	ft_key(int key, t_cub *cub)
@@ -112,11 +89,14 @@ int	ft_key(int key, t_cub *cub)
 		ft_move_camera(cub, 1);
 	if (key == RIGHT)
 		ft_move_camera(cub, -1);
+	if (key == ESC)
+		ft_end_game(cub);
 	return (0);
 }
 
 void	run_game(t_cub *cub)
 {
 	mlx_hook(cub->game.win_ptr, 2, 1L << 0, ft_key, cub);
+	mlx_hook(cub->game.win_ptr, 17, 1L << 17, ft_end_game, cub);
 	mlx_loop(cub->game.mlx_ptr);
 }

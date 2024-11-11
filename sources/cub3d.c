@@ -16,6 +16,20 @@ void	init_struct(t_cub *cub)
 	cub->game.win_ptr = NULL;
 	cub->game.mlx_ptr = NULL;
 	cub->game.image_data = 0;
+	cub->game.pixel_bits = 0;
+	cub->game.line_bytes = 0;
+	cub->game.endian = 0;
+	cub->no_ass = NULL;
+	cub->we_ass = NULL;
+	cub->ea_ass = NULL;
+	cub->so_ass = NULL;
+	cub->colour_c = 0;
+	cub->colour_f = 0;
+	cub->game.pixel_bits2 = 0;
+	cub->game.line_bytes2 = 0;
+	cub->game.endian2 = 0;
+	cub->game.image_data2 = 0;
+	cub->game.image3 = NULL;
 }
 
 int	check_args(int argc, char **argv)
@@ -41,6 +55,8 @@ int	ft_init_game(t_cub *cub)
 	cub->game.win_ptr = mlx_new_window(cub->game.mlx_ptr, WIDTH, HEIGHT, "Cub3D");
 	if (!cub->game.win_ptr)
 		return (1);
+	if (get_assets(cub))
+		return (1);
 	if (cub->direction == 'N')
 		cub->angle = PI / 2;
 	else if (cub->direction == 'S')
@@ -65,11 +81,11 @@ int	main(int argc, char *argv[])
 
 	init_struct(&cub);
 	if (check_args(argc, argv))
-		return (ft_error());
+		return (ft_error(&cub));
 	if (check_map(argv[1], &cub))
-		return (ft_error());
+		return (ft_error(&cub));
 	if (ft_init_game(&cub))
-		return (ft_error());
+		return (ft_error(&cub));
 	run_game(&cub);
 	return (0);
 }

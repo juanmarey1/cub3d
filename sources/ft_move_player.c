@@ -60,5 +60,5 @@ void	ft_move_player(t_cub *cub, int n)
 		cub->angle = (2 * PI) + cub->angle;
 	else if (cub->angle > 2 * PI)
 		cub->angle = (cub->angle - (2 * PI));
-	redo_raycasting(cub);
+	init_raycasting(cub);
 }

@@ -14,33 +14,38 @@ void	calculate_distance_to_wall(t_cub *cub)
 
 void	proyect_wall(t_cub *cub, int i)
 {
-	double	wall_height;
+	int		wall_height;
+	int		pos;
 	int		j;
 
 	j = 0;
-	// printf("%f\n", cub->distance);
 	cub->distance = cub->distance * cos(cub->angle - cub->initial_angle);
 	if (cub->distance < 0)
 		cub->distance *= -1;
-	// printf("%f\n", cub->distance);
-	if (cub->distance == 0)
-		wall_height = HEIGHT;
+	if (cub->distance <= 10)
+		wall_height = 8 * HEIGHT;
+	else
+		wall_height = (int)(HEIGHT * ((WALL_HEIGHT_CTE) / (cub->distance)));
+	if (wall_height > (int)HEIGHT)
+		get_colour_2(cub, (double)wall_height / (double)HEIGHT, j, i);
 	else
 	{
-		// wall_height = ((WIDTH / 2) / (tan(VISION_ANGLE / 2))) * (1 / cub->distance);
-		wall_height = HEIGHT * (WALL_HEIGHT_CTE / cub->distance);
+		while (j < (HEIGHT - wall_height) / 2)
+		{
+			pos = (j * WIDTH + i);
+			*(unsigned int *)(cub->game.image_data + pos) = cub->colour_c;
+			j++;
+		}
+		get_colour(cub, wall_height, j, i);
+		while (j < (wall_height + ((HEIGHT - wall_height) / 2)))
+			j++;
+		while (j < HEIGHT)
+		{
+			pos = (j * WIDTH + i);
+			*(unsigned int *)(cub->game.image_data + pos) = cub->colour_f;
+			j++;
+		}
 	}
-	// printf("sexoo->%f\n", wall_height);
-	// cub->game.image = mlx_new_image(cub->game.mlx_ptr, WIDTH, HEIGHT);
-	// cub->game.image_data = (int *)mlx_get_data_addr(cub->game.image, &cub->game.pixel_bits, &cub->game.line_bytes, &cub->game.endian);
-	while (j < (HEIGHT - wall_height) / 2)
-		j++;
-	while (j < (HEIGHT - ((HEIGHT - wall_height) / 2)))
-	{
-		mlx_pixel_put(cub->game.mlx_ptr, cub->game.win_ptr, i, j, 0xFFFFFF);
-		j++;
-	}
-	return ;
 }
 
 void	init_raycasting(t_cub *cub)
@@ -48,6 +53,8 @@ void	init_raycasting(t_cub *cub)
 	int	i;
 
 	i = 0;	
+	cub->game.image = mlx_new_image(cub->game.mlx_ptr, WIDTH, HEIGHT);
+	cub->game.image_data = (int *)mlx_get_data_addr(cub->game.image, &cub->game.pixel_bits, &cub->game.line_bytes, &cub->game.endian);
 	while (i < WIDTH)
 	{
 		cub->distance = 0;
@@ -59,5 +66,12 @@ void	init_raycasting(t_cub *cub)
 		if (cub->angle < 0)
 			cub->angle = (2 * PI) + cub->angle;
 		i++;
+	}
+	mlx_clear_window(cub->game.mlx_ptr, cub->game.win_ptr);
+	mlx_put_image_to_window(cub->game.mlx_ptr, cub->game.win_ptr, cub->game.image, 0, 0);
+	if (cub->game.image)
+	{
+		mlx_destroy_image(cub->game.mlx_ptr, cub->game.image);
+		cub->game.image = NULL;
 	}
 }
